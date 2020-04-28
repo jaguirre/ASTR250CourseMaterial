@@ -44,11 +44,12 @@ for filtername in filter_names:
     filters[filtername] = {}
     filters[filtername]['shape'] = InterpolateFilter(filtername)
 
-wave = np.linspace(200,1100,num=1000)
+wave = np.linspace(200,1100,num=1000)*u.nm
 
 for fn in filter_names:
-    dwvl = np.trapz(filters[fn]['shape'](wave),x=wave)*u.nm
-    wvl_mean = np.trapz(wave*filters[fn]['shape'](wave),x=wave)/dwvl*u.nm**2
+    # This is the equivalent square filter
+    dwvl = np.trapz(filters[fn]['shape'](wave),x=wave)#*u.nm
+    wvl_mean = np.trapz(wave*filters[fn]['shape'](wave),x=wave)/dwvl#*u.nm**2
     filters[fn]['wvl_mean'] = wvl_mean
     filters[fn]['dwvl'] = dwvl
 
