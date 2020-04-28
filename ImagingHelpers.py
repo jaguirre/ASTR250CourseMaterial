@@ -1,6 +1,7 @@
 from astropy.io import fits
 from astropy.wcs import WCS
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Image:
         
@@ -8,8 +9,13 @@ class Image:
         self.filename = filename
         fts = fits.open(filename)
         self.hdu = fts[0]
-        # Hopefully this changes this in both the header and the actual hdu
-        self.hdu.header.rename_keyword('RADECSYS','RADESYSa')
+        
+        # If the header has the deprecated keyword, replace it
+        # This will change it in both self.header and self.hdu
+        try:
+            self.hdu.header.rename_keyword('RADECSYS','RADESYSa')
+        except:
+            pass
         self.data = np.array(self.hdu.data.copy(),dtype='float64')
         self.header = self.hdu.header.copy()
         self.wcs = WCS(self.header)
@@ -48,3 +54,14 @@ def rgb_stack(r, g, b):
 def minmax(array):
     print(array.min(), array.max())
     print(np.nanmin(array), np.nanmax(array))
+    
+def ColorSwatch(rgb):
+    from ImagingHelpers import rgb_stack
+    block = np.ones([25,25])
+    image = rgb_stack(block*rgb[0], block*rgb[1], block*rgb[2])
+    plt.imshow(image)
+    ax = plt.gca()
+    ax.axes.xaxis.set_visible(False)
+    ax.axes.yaxis.set_visible(False)
+    
+    return
